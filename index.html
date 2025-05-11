@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tienda de Tenis - Exclusiva</title>
+  <style>
+    :root {
+      --primary-color: #000000;
+      --accent-color: #ffffff;
+      --highlight-color: #f5f5f5;
+      --font-main: 'Segoe UI', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--highlight-color);
+      color: var(--primary-color);
+    }
+
+    header {
+      background: var(--primary-color);
+      color: var(--accent-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+    }
+
+    #cart-toggle {
+      background: var(--accent-color);
+      color: var(--primary-color);
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .card h3 {
+      margin: 0.5rem;
+    }
+
+    .card p {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .card button {
+      background: var(--primary-color);
+      color: var(--accent-color);
+      border: none;
+      padding: 0.6rem 1.2rem;
+      margin: 1rem 0;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .card button:hover {
+      background: #333;
+    }
+
+    #cart {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      width: 320px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      padding: 1rem;
+      display: none;
+      z-index: 200;
+    }
+
+    #cart h2 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.5rem;
+    }
+
+    .cart-item button {
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.2rem 0.5rem;
+      cursor: pointer;
+    }
+
+    #total {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    #whatsapp-button {
+      margin-top: 1rem;
+      background: green;
+      color: white;
+      padding: 0.5rem;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    footer {
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Tenis Exclusivos</h1>
+    <div id="cart-toggle">🛒 Carrito (<span id="cart-count">0</span>)</div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <img src="https://via.placeholder.com/300x220?text=Tenis+1" alt="Tenis 1">
+      <h3>Nike Air Max</h3>
+      <p>$120.00</p>
+      <button onclick="addToCart('Nike Air Max', 120)">Agregar al carrito</button>
+    </div>
+    <div class="card">
+      <img src="https://via.placeholder.com/300x220?text=Tenis+2" alt="Tenis 2">
+      <h3>Adidas Ultraboost</h3>
+      <p>$140.00</p>
+      <button onclick="addToCart('Adidas Ultraboost', 140)">Agregar al carrito</button>
+    </div>
+    <div class="card">
+      <img src="https://via.placeholder.com/300x220?text=Tenis+3" alt="Tenis 3">
+      <h3>Puma RS-X</h3>
+      <p>$110.00</p>
+      <button onclick="addToCart('Puma RS-X', 110)">Agregar al carrito</button>
+    </div>
+  </div>
+
+  <div id="cart">
+    <h2>Tu carrito</h2>
+    <div id="cart-items"></div>
+    <div id="total"></div>
+    <button id="whatsapp-button" onclick="sendWhatsApp()">Enviar pedido por WhatsApp</button>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Tenis Exclusivos. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartContainer = document.getElementById("cart-items");
+    const cartCountEl = document.getElementById("cart-count");
+    const cartPanel = document.getElementById("cart");
+    const totalEl = document.getElementById("total");
+
+    function addToCart(name, price) {
+      cartItems.push({ name, price });
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+      updateCart();
+    }
+
+    function removeFromCart(index) {
+      cartItems.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+      updateCart();
+    }
+
+    function updateCart() {
+      cartContainer.innerHTML = "";
+      let total = 0;
+      cartItems.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `<span>${item.name} - $${item.price.toFixed(2)}</span>
+                         <button onclick="removeFromCart(${index})">Eliminar</button>`;
+        cartContainer.appendChild(div);
+        total += item.price;
+      });
+      totalEl.textContent = `Total: $${total.toFixed(2)}`;
+      cartCountEl.textContent = cartItems.length;
+    }
+
+    function sendWhatsApp() {
+      if (cartItems.length === 0) return alert("Tu carrito está vacío");
+      const message = cartItems.map(item => `- ${item.name}: $${item.price}`).join("%0A");
+      const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+      const finalMessage = `Hola, quiero comprar:%0A${message}%0A%0ATotal: $${total.toFixed(2)}`;
+      window.open(`https://wa.me/?text=${finalMessage}`, '_blank');
+    }
+
+    document.getElementById("cart-toggle").addEventListener("click", () => {
+      cartPanel.style.display = cartPanel.style.display === "none" || cartPanel.style.display === "" ? "block" : "none";
+    });
+
+    updateCart();
+  </script>
+</body>
+</html>
+
